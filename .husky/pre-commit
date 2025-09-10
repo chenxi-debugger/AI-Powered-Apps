@@ -1,1 +1,12 @@
-bunx lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Ensure Bun is on PATH for non-interactive shells (Husky)
+export PATH="$HOME/.bun/bin:/opt/homebrew/opt/bun/bin:$PATH"
+
+# Prefer bunx if present, otherwise fall back to npx
+if command -v bunx >/dev/null 2>&1; then
+  bunx lint-staged
+else
+  npx --yes lint-staged
+fi
