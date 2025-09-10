@@ -40,19 +40,23 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       res.status(400).json(parseResult.error.format());
       return;
    }
-   const { prompt, conversationId } = req.body;
 
-   const response = await client.responses.create({
-      model: 'gpt-3.5-turbo',
-      input: prompt,
-      temperature: 0.2,
-      max_output_tokens: 100,
-      previous_response_id: conversations.get(conversationId),
-   });
+   try {
+      const { prompt, conversationId } = req.body;
+      const response = await client.responses.create({
+         model: 'gpt-3.5-turbo',
+         input: prompt,
+         temperature: 0.2,
+         max_output_tokens: 100,
+         previous_response_id: conversations.get(conversationId),
+      });
 
-   conversations.set(conversationId, response.id);
+      conversations.set(conversationId, response.id);
 
-   res.json({ message: response.output_text });
+      res.json({ message: response.output_text });
+   } catch (error) {
+      res.status(500).json({ error: 'Failed to generate a response.' });
+   }
 });
 
 app.listen(port, () => {
